@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -12,11 +13,16 @@ import 'package:window_manager/window_manager.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-  if (Platform.isWindows || Platform.isMacOS) {
+  if (Platform.isWindows) {
+    WindowManager.instance.setSize(const Size(1100, 710));
+    WindowManager.instance.setMinimumSize(const Size(1100, 710));
+    WindowManager.instance.setMaximumSize(const Size(1100, 710));
+  } else if (Platform.isMacOS) {
     WindowManager.instance.setSize(const Size(1080, 690));
     WindowManager.instance.setMinimumSize(const Size(1080, 690));
     WindowManager.instance.setMaximumSize(const Size(1080, 690));
   }
+
   runApp(const MyApp());
 }
 
@@ -47,7 +53,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController editingController = TextEditingController();
-  late final connectivityResult;
+
+  late StreamSubscription<ConnectivityResult> subscription;
+  late ValueNotifier networkStatus = ValueNotifier(false);
 
   final allMnemonicList = List.generate(listEN.length, (i) => [i + 1, listEN[i], listKR[i]]);
   var mnemonicList = [];
@@ -64,6 +72,19 @@ class _MyHomePageState extends State<MyHomePage> {
     mnemonicList.addAll(allMnemonicList);
 
     super.initState();
+    subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        networkStatus.value = true;
+      } else {
+        networkStatus.value = false;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    subscription.cancel();
   }
 
   @override
@@ -74,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Image.asset(
-              'assets/bitcong.png',
+              'assets/bitcong_mini.png',
               width: 50,
             ),
             const SizedBox(
@@ -168,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   color: color4,
                                   child: const Text(
                                     '동전 던지기',
-                                    style: TextStyle(fontSize: 20),
+                                    style: TextStyle(fontSize: 15),
                                   ),
                                 ),
                                 Container(
@@ -352,7 +373,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 wordsList[focusIdx - 1] = mnemonicList[index][0] - 1;
                                 generateLastWords();
 
-                                if (wordsList.contains(-1)) {
+                                if (wordsList.sublist(focusIdx).contains(-1)) {
+                                  focusIdx = wordsList.sublist(focusIdx).indexOf(-1) + focusIdx + 1;
+                                } else if (wordsList.contains(-1)) {
                                   focusIdx = wordsList.indexOf(-1) + 1;
                                 } else {
                                   return;
@@ -384,12 +407,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-          FutureBuilder(
-              future: connectivityCheck(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  if (!snapshot.data) {
-                    return Container(
+          ValueListenableBuilder(
+            valueListenable: networkStatus,
+            builder: (context, value, child) {
+              return !value
+                  ? Container(
                       width: 1080,
                       height: 600,
                       color: Colors.orange.shade50,
@@ -411,12 +433,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ],
                       ),
-                    );
-                  }
-                }
-
-                return const SizedBox();
-              }),
+                    )
+                  : const SizedBox();
+            },
+          )
         ],
       ),
     );
@@ -497,14 +517,5 @@ class _MyHomePageState extends State<MyHomePage> {
         mnemonicList.addAll(allMnemonicList);
       });
     }
-  }
-
-  // Network check
-  Future<bool> connectivityCheck() async {
-    connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      return true;
-    }
-    return false;
   }
 }
