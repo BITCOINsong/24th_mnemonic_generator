@@ -1,4 +1,4 @@
-# mnemonic_generator
+# 24th Mnemonic generator
 
 You can download it from 'Releases'.
 
