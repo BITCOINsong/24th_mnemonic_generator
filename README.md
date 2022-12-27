@@ -1,5 +1,7 @@
 # mnemonic_generator
 
+You can download it from 'Releases'.
+
 - If you enter 23 mnemonic, extract the 24th mnemonic.
 - Works only offline.
 - You can use coin toss to make mnemonic.
