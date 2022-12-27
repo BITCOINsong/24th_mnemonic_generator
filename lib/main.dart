@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: const MyHomePage(title: '당신의 니모닉을 만들어보세요!'),
+      home: const MyHomePage(title: '당신의 니모닉을 만들어보세요! Mnemonic Generator!'),
     );
   }
 }
@@ -188,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   padding: const EdgeInsets.all(10),
                                   color: color4,
                                   child: const Text(
-                                    '동전 던지기',
+                                    '동전 던지기 Coin toss',
                                     style: TextStyle(fontSize: 15),
                                   ),
                                 ),
@@ -250,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         width: 10,
                                       ),
                                       const Text(
-                                        '유튜브\n - 1분 비트코인',
+                                        'Youtube\n - 1분 비트코인',
                                         style: TextStyle(fontSize: 15),
                                       ),
                                       const SizedBox(
@@ -290,7 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               height: 40,
                               padding: const EdgeInsets.all(10),
                               color: color1,
-                              child: const Text('24번째 니모닉은..'),
+                              child: const Text('24th Word list'),
                             ),
                             Stack(
                               children: [
@@ -427,7 +427,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             width: 30,
                           ),
                           const Text(
-                            '블루투스/인터넷/와이파이를 끊고\n다시 실행해 주세요!',
+                            '인터넷 / 와이파이를 끊어주세요!\nPlease turn off Internet / Wifi !',
                             style: TextStyle(fontSize: 40),
                             textAlign: TextAlign.center,
                           ),
